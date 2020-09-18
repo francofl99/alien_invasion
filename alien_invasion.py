@@ -8,54 +8,61 @@ from button import Button
 from scoreboard import Scoreboard
 import game_function as gf
 
-def run_game():
-    # Gettin settings
-    ai_settings = Settings()
-    #inizialite game and create a screen object
-    pygame.init()
-    # Create screen
-    screen_dimensions = (ai_settings.screen_width, ai_settings.screen_height)
-    screen = pygame.display.set_mode(screen_dimensions)
-    # Game name
-    pygame.display.set_caption("Alien invasion")
-    # Make the Play button.
-    play_button = Button(ai_settings, screen, 'Play')
-    # Make the pause button
-    pause_button = Button(ai_settings, screen, 'Pause')
-    # Create an instance to store game statistics
-    stats = GameStats(ai_settings)
-    # Create scoreboard
-    sb = Scoreboard(ai_settings, screen, stats)
-    # Make a ship, a group of bullets, group of aliens and super aliens
-    ship = Ship(ai_settings, screen)
-    bullets = Group()
-    aliens = Group()
-    super_aliens = Group()
-    # Create the fleet of aliens.
-    gf.create_fleet(ai_settings, screen, ship, aliens, super_aliens)
-    # Run game
-    while True:
-        run(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets, play_button, pause_button)
+class Game:
+    def __init__(self):
+        self.ai_settings = Settings()
+        self.screen_dimensions = (self.ai_settings.screen_width, self.ai_settings.screen_height)
+        self.screen = pygame.display.set_mode(self.screen_dimensions)
+        self.stats = GameStats(self.ai_settings)
 
-def update_surfaces(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets):
+        self.assign_name_to_game("Alien invasion")
+
+        self.play_button = self.make_button('Play')
+        self.pause_button = self.make_button('Pause')
+
+        self.sb = Scoreboard(self)
+
+        # Elements of the game
+        self.ship = Ship(self.ai_settings, self.screen)
+        self.aliens = Group()
+        self.super_aliens = Group()
+        self.bullets = Group()
+
+        gf.create_fleet(self.ai_settings, self.screen, self.ship, self.aliens, self.super_aliens)
+
+    def make_button(self, type_of_button):
+        return Button(self.ai_settings, self.screen, type_of_button)
+
+    def assign_name_to_game(self, new_game_name):
+        pygame.display.set_caption(new_game_name)
+
+    def run(self):
+        while True:
+            # Check for keyboard and mouse events
+            gf.check_events(self)
+            # If the game is active
+            if self.stats.game_active:
+            # Update on the screen the game elements
+                self.update_surfaces()
+                #update game
+                gf.update_screen(self)
+
+    def update_surfaces(self):
         """Update game elements"""
         # Update ship
-        ship.update()
+        self.ship.update()
         # Update bullets
-        gf.update_bullets(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets)
+        gf.update_bullets(self.ai_settings, self.screen, self.stats, self.sb, self.ship, self.aliens, self.super_aliens, self.bullets)
         # Update aliens and super aliens
-        gf.update_aliens(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets)
+        gf.update_aliens(self.ai_settings, self.screen, self.stats, self.sb, self.ship, self.aliens, self.super_aliens, self.bullets)
 
-def run(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets, play_button, pause_button):
-    """Run game and update surfaces"""
-    # Check for keyboard and mouse events
-    gf.check_events(ai_settings, screen, stats, sb, play_button, pause_button, ship, aliens, super_aliens, bullets)
-    # If the game is active
-    if stats.game_active:
-        # Update on the screen the game elements
-        update_surfaces(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets)
-    # update game
-    gf.update_screen(ai_settings, screen, stats, sb, ship, aliens, super_aliens,bullets, play_button, pause_button)
+
+    
+
+def run_game():
+    pygame.init()
+    game = Game()
+    game.run()
 
 # Enjoy :)
 run_game()

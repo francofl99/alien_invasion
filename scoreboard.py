@@ -6,13 +6,13 @@ from ship import Ship
 class Scoreboard():
     """A class to report scoring information."""
     
-    def __init__(self, ai_settings, screen, stats):
+    def __init__(self, game):
         """Initialize scorekeeping attributes."""
 
-        self.screen = screen
-        self.screen_rect = screen.get_rect()
-        self.ai_settings = ai_settings
-        self.stats = stats
+        self.screen = game.screen
+        self.screen_rect = game.screen.get_rect()
+        self.ai_settings = game.ai_settings
+        self.stats = game.stats
 
         # Font settings for scoring information.
         self.text_color = (90, 90, 90)

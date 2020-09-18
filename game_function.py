@@ -8,7 +8,7 @@ from alien import Alien, SuperAlien
 from bullet import Bullet
 
 # Events
-def check_events(ai_settings, screen, stats, sb, play_button, pause_button, ship, aliens, super_aliens, bullets):
+def check_events(game):
     """
     Rspond to keypress and mouse events.
     """
@@ -17,14 +17,14 @@ def check_events(ai_settings, screen, stats, sb, play_button, pause_button, ship
                 sys.exit()
 
             elif event.type == pygame.KEYDOWN:
-                check_keydown_events(event, ai_settings, screen, stats, ship, bullets)
+                check_keydown_events(event, game.ai_settings, game.screen, game.stats, game.ship, game.bullets)
 
             elif event.type == pygame.KEYUP:
-                check_keyup_events(event, ship)
+                check_keyup_events(event, game.ship)
             
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                check_button(ai_settings, screen, stats, sb, play_button, ship, aliens, super_aliens, bullets, mouse_x, mouse_y)
+                check_button(game.ai_settings, game.screen, game.stats, game.sb, game.play_button, game.ship, game.aliens, game.super_aliens, game.bullets, mouse_x, mouse_y)
 
 def check_keydown_events(event, ai_settings, screen, stats, ship, bullets):
     """
@@ -294,16 +294,16 @@ def show_surfaces(screen, ship, aliens, super_aliens, bullets):
     aliens.draw(screen)
     super_aliens.draw(screen)
 
-def update_screen(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets, play_button, pause_button):
+def update_screen(game):
     """Update images on the screen and flip to the new screen."""
     #Redraw the screen during each pass through the loop.
-    screen.fill(ai_settings.bg_color)
+    game.screen.fill(game.ai_settings.bg_color)
     # show elements of the game on screen
-    show_surfaces(screen, ship, aliens, super_aliens, bullets)
+    show_surfaces(game.screen, game.ship, game.aliens, game.super_aliens, game.bullets)
     # Draw the score information
-    sb.show_score()
+    game.sb.show_score()
     # Draw the play button if the game is inactive.
-    check_state_game(stats, play_button, pause_button)
+    check_state_game(game.stats, game.play_button, game.pause_button)
     #make the most recently draw screen visible
     pygame.display.flip()
 
