@@ -84,34 +84,34 @@ def get_number_rows(ai_settings, ship_height, alien_height):
     
     return number_rows
     
-def update_aliens(ai_settings, screen, stats, sb, ship, aliens, super_aliens,bullets):
+def update_aliens(game):
     """
     Check if the fleet is at an edge,
     and then update the postions of all aliens in the fleet.
     """
-    check_fleet_edges(ai_settings, aliens, super_aliens)
-    aliens.update()
-    super_aliens.update()
+    check_fleet_edges(game)
+    game.aliens.update()
+    game.super_aliens.update()
     # Look for alien-ship collisions or aliens hitting the bottom of the screen.
     check_aliens_ship_collisions(game)
 
-def check_fleet_edges(ai_settings, aliens, super_aliens):
+def check_fleet_edges(game):
     """Respond appropriately if any aliens have reached an edge."""
     # join aliens on the game like a only information list 
-    total_aliens = join_aliens(aliens, super_aliens)
+    total_aliens = join_aliens(game.aliens, game.super_aliens)
     # Check of any alien match with screen edge
     for alien in total_aliens:
         if alien.check_edges():
-            change_fleet_direction(ai_settings, aliens, super_aliens)
+            change_fleet_direction(game)
             break
 
-def change_fleet_direction(ai_settings, aliens, super_aliens):
+def change_fleet_direction(game):
     """Drop the entire fleet and change the fleet's direction."""
-    for alien in aliens.sprites():
-        alien.rect.y += ai_settings.fleet_drop_speed
-    for super_alien in super_aliens.sprites():
-        super_alien.rect.y += ai_settings.fleet_drop_speed
-    ai_settings.fleet_direction *= -1
+    for alien in game.aliens.sprites():
+        alien.rect.y += game.ai_settings.fleet_drop_speed
+    for super_alien in game.super_aliens.sprites():
+        super_alien.rect.y += game.ai_settings.fleet_drop_speed
+    game.ai_settings.fleet_direction *= -1
 
 def join_aliens(aliens, super_aliens):
     """Join the totally of game aliens"""
@@ -166,30 +166,28 @@ def check_aliens_ship_collisions(game):
     if ship_alien_collision or alien_on_the_bottom:
         ship_hit(game)
 
-def check_bullet_alien_collisions(ai_settings,screen, stats, sb, ship, aliens, super_aliens, bullets):
+def check_bullet_alien_collisions(game):
     """Respond to bullet-alien collisions."""
 
     # Check if any bullet collision with any alien
-    bullet_alien_collision(ai_settings,screen, stats, sb, ship, aliens, bullets)
+    bullet_alien_collision(game)
 
     # Check if any bullet collision with any super alien
-    bullet_super_alien_collisions(ai_settings,screen, stats, sb, ship, super_aliens, bullets)
+    bullet_super_alien_collisions(game)
         
     # Check if totally fleet are down
     check_fleet_down(game)
 
-def bullet_alien_collision(ai_settings,screen, stats, sb, ship, aliens, 
-bullets):
-    # Remove any bullets and aliens that have collided.
-    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+def bullet_alien_collision(game):    # Remove any bullets and aliens that have collided.
+    collisions = pygame.sprite.groupcollide(game.bullets, game.aliens, True, True)
 
     if collisions:
         for aliens in collisions.values():
             # Assign points
-            assign_points(ai_settings, stats, sb, aliens=aliens)
+            assign_points(game, aliens=aliens)
         
         # Update high score
-        check_high_score(stats, sb)
+        check_high_score(game)
 
 def check_fleet_down(game):
     """Check if the total aliens are down"""
@@ -200,9 +198,9 @@ def check_fleet_down(game):
         # Increment challenger of game
         increase_level(game.ai_settings, game.stats, game.sb)
 
-def bullet_super_alien_collisions(ai_settings,screen, stats, sb, ship, super_aliens, bullets):
+def bullet_super_alien_collisions(game):
     """Check if any bullet shoot to any super alien"""
-    collisions = pygame.sprite.groupcollide(bullets, super_aliens, True, False)
+    collisions = pygame.sprite.groupcollide(game.bullets, game.super_aliens, True, False)
 
     if collisions:
         for super_aliens_list in collisions.values():
@@ -210,11 +208,11 @@ def bullet_super_alien_collisions(ai_settings,screen, stats, sb, ship, super_ali
                 # If the super alien have two shoot
                 if super_alien.scratch:
                     # Delete super alien
-                    super_aliens.remove(super_alien)
+                    game.super_aliens.remove(super_alien)
                     # Assign points
-                    assign_points(ai_settings, stats, sb, super_aliens=super_aliens_list)
+                    assign_points(game, super_aliens=super_aliens_list)
                     # Update high score
-                    check_high_score(stats, sb)
+                    check_high_score(game)
                 else:
                     # The super alien have one shoot
                     super_alien.scratch = 1
@@ -235,20 +233,20 @@ def ship_hit(game):
         game.stats.game_active = False
 
 # Bullets
-def update_bullets(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets):
+def update_bullets(game):
     """Update position of bullets and get rid of old bullets."""
     # Update bullet positions
-    bullets.update()
+    game.bullets.update()
     # Get rid of bullets that have disappeared.
-    remove_old_bullets(bullets)
+    remove_old_bullets(game)
     # Check for any bullets that have hit aliens and if so, get rid of the bullet and the alien
-    check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, super_aliens, bullets)
+    check_bullet_alien_collisions(game)
 
-def remove_old_bullets(bullets):
+def remove_old_bullets(game):
     """Remove bullets such it was reached the top screen"""
-    for bullet in bullets.copy():
+    for bullet in game.bullets.copy():
         if bullet.rect.bottom <= 0:
-            bullets.remove(bullet)
+            game.bullets.remove(bullet)
 
 def fire_bullet(game):
     """Fire a bullet if limit not reached yet."""
@@ -258,15 +256,15 @@ def fire_bullet(game):
             game.bullets.add(new_bullet)
 
 # Points
-def assign_points(ai_settings, stats, sb, aliens=None, super_aliens=None):
+def assign_points(game, aliens=None, super_aliens=None):
     if aliens:
         # Assign the totally points of aliens shotdown
-        stats.score += ai_settings.alien_points * len(aliens)
+        game.stats.score += game.ai_settings.alien_points * len(aliens)
     if super_aliens:
         # Assign the points of super alien down
-        stats.score += ai_settings.super_alien_points
+        game.stats.score += game.ai_settings.super_alien_points
     # Update score
-    sb.prep_score()
+    game.sb.prep_score()
 
 def increase_level(ai_settings, stats, sb):
     """Increment challenger of game"""
@@ -277,11 +275,11 @@ def increase_level(ai_settings, stats, sb):
     # Update level
     sb.prep_level()
 
-def check_high_score(stats, sb):
+def check_high_score(game):
     """Check to see if there's a new high score."""
-    if stats.score > stats.high_score:
-        stats.update_high_score()
-        sb.prep_high_score()
+    if game.stats.score > game.stats.high_score:
+        game.stats.update_high_score()
+        game.sb.prep_high_score()
 
 # Game update and screen
 def show_surfaces(screen, ship, aliens, super_aliens, bullets):

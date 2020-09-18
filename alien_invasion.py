@@ -52,9 +52,9 @@ class Game:
         # Update ship
         self.ship.update()
         # Update bullets
-        gf.update_bullets(self.ai_settings, self.screen, self.stats, self.sb, self.ship, self.aliens, self.super_aliens, self.bullets)
+        gf.update_bullets(self)
         # Update aliens and super aliens
-        gf.update_aliens(self.ai_settings, self.screen, self.stats, self.sb, self.ship, self.aliens, self.super_aliens, self.bullets)
+        gf.update_aliens(self)
 
 
     
