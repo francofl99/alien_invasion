@@ -10,12 +10,12 @@ import game_function as gf
 
 class Game:
     def __init__(self):
+        self.assign_name_to_game("Alien invasion")
+
         self.ai_settings = Settings()
         self.screen_dimensions = (self.ai_settings.screen_width, self.ai_settings.screen_height)
         self.screen = pygame.display.set_mode(self.screen_dimensions)
-        self.stats = GameStats(self.ai_settings)
-
-        self.assign_name_to_game("Alien invasion")
+        self.stats = GameStats(self)
 
         self.play_button = self.make_button('Play')
         self.pause_button = self.make_button('Pause')
@@ -28,7 +28,7 @@ class Game:
         self.super_aliens = Group()
         self.bullets = Group()
 
-        gf.create_fleet(self.ai_settings, self.screen, self.ship, self.aliens, self.super_aliens)
+        gf.create_fleet(self)
 
     def make_button(self, type_of_button):
         return Button(self.ai_settings, self.screen, type_of_button)

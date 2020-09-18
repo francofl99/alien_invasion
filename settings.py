@@ -7,6 +7,7 @@ class Settings():
         """
         Inizialite the game settings
         """
+
         # screen settings
         self.screen_width = 1200
         self.screen_height = 600
@@ -49,5 +50,6 @@ class Settings():
         self.alien_points = int(self.alien_points * self.score_scale)
         self.super_alien_points = int(self.super_alien_points * self.score_scale)
 
+ 
 
 
