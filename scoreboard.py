@@ -9,6 +9,8 @@ class Scoreboard():
     def __init__(self, game):
         """Initialize scorekeeping attributes."""
 
+        self.game = game
+
         self.screen = game.screen
         self.screen_rect = game.screen.get_rect()
         self.ai_settings = game.ai_settings
@@ -34,7 +36,7 @@ class Scoreboard():
         """Show how many ships are left."""
         self.ships = Group()
         for ship_number in range(self.stats.ships_left):
-            ship = Ship(self.ai_settings, self.screen)
+            ship = Ship(self.game)
             ship.rect.x = 10 + ship_number * ship.rect.width
             ship.rect.y = 10
             self.ships.add(ship)

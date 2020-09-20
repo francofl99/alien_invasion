@@ -4,16 +4,16 @@ from pygame.sprite import Sprite
 
 class Ship(Sprite):
 
-    def __init__(self, ai_settings, screen):
+    def __init__(self, game):
         """Initialize the ship and set its starting position."""
         super(Ship, self).__init__()
-        self.screen = screen
-        self.ai_setting = ai_settings
+        self.screen = game.screen
+        self.ai_setting = game.ai_settings
 
         # Load the ship image and get its react.
         self.image = pygame.image.load('images/ship_4_white_small.bmp')
         self.rect = self.image.get_rect()
-        self.screen_rect = screen.get_rect()
+        self.screen_rect = self.screen.get_rect()
 
         # Start each new ship at the bottom center of the screen
         self.rect.centerx = self.screen_rect.centerx
